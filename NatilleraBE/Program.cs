@@ -14,6 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<clsSocio>();
 builder.Services.AddScoped<clsPago>();
 builder.Services.AddScoped<clsInteresPago>();
+builder.Services.AddScoped<clsPolla>();
+builder.Services.AddHttpClient<clsPolla>();
 
 
 

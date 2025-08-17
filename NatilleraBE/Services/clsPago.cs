@@ -74,27 +74,91 @@ namespace NatilleraBE.Services
                 TotalRifa = socio.Pagos.Sum(p => p.Rifa)
             };
         }
-        //public List<ResumenPagoSocioDto> ObtenerPagosPorMes(int mes, int anio)
-        //{
-        //    var socios = dbNatillera.Socios
-        //        .Where(s => s.Estado == true)
-        //        .Select(s => new ResumenPagoSocioDto
-        //        {
-        //            Documento = s.Documento ?? 0,
-        //            Nombre = s.Nombre,
-        //            Ahorro = dbNatillera.Pagos
-        //                .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
-        //                .Sum(p => (decimal?)p.Ahorro) ?? 0,
-        //            Polla = dbNatillera.Pagos
-        //                .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
-        //                .Sum(p => (decimal?)p.Polla) ?? 0,
-        //            Rifa = dbNatillera.Pagos
-        //                .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
-        //                .Sum(p => (decimal?)p.Rifa) ?? 0
-        //        }).ToList();
+        public ResumenPagosMesDto ObtenerPagosPorMes(int mes, int anio)
+        {
+            var socios = dbNatillera.Socios
+                .Where(s => s.Estado == true)
+                .Select(s => new ResumenPagoSocioDto
+                {
+                    IdPago = dbNatillera.Pagos
+                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Select(p => p.Id)
+                        .FirstOrDefault(),
 
-        //    return socios;
-        //}
+                    Documento = s.Documento ?? 0,
+                    Nombre = s.Nombre,
+
+                    Ahorro = dbNatillera.Pagos
+                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Select(p => (decimal?)p.Ahorro).FirstOrDefault() ?? 0,
+
+                    Polla = dbNatillera.Pagos
+                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Select(p => (decimal?)p.Polla).FirstOrDefault() ?? 0,
+
+                    Rifa = dbNatillera.Pagos
+                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Select(p => (decimal?)p.Rifa).FirstOrDefault() ?? 0,
+
+                    FechaPago = dbNatillera.Pagos
+                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Select(p => (DateOnly?)p.FechaPago)
+                        .FirstOrDefault()
+                }).ToList();
+
+            var totalAhorro = socios.Sum(s => s.Ahorro);
+            var totalPolla = socios.Sum(s => s.Polla);
+            var totalRifa = socios.Sum(s => s.Rifa);
+
+            var totalInteres = (
+                from i in dbNatillera.InteresPagos
+                join p in dbNatillera.Pagos on i.IdPago equals p.Id
+                where p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado
+                select (decimal?)i.ValorTotal
+            ).Sum() ?? 0;
+
+            string MesEnTexto(int m) => m switch
+            {
+                1 => "Enero",
+                2 => "Febrero",
+                3 => "Marzo",
+                4 => "Abril",
+                5 => "Mayo",
+                6 => "Junio",
+                7 => "Julio",
+                8 => "Agosto",
+                9 => "Septiembre",
+                10 => "Octubre",
+                11 => "Noviembre",
+                12 => "Diciembre",
+                _ => m.ToString()
+            };
+
+            var mesTexto = MesEnTexto(mes);
+            var mesNum = mes.ToString();
+            var mesNum2 = mes.ToString("00");
+
+            var pollaMes = dbNatillera.Pollas
+                .Where(p => p.Mes != null &&
+                            (p.Mes == mesTexto || p.Mes == mesNum || p.Mes == mesNum2))
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefault();
+
+            if (pollaMes?.Estado == true)
+            {
+                totalPolla /= 2;
+            }
+
+            return new ResumenPagosMesDto
+            {
+                Socios = socios,
+                TotalAhorro = totalAhorro,
+                TotalPolla = totalPolla,
+                TotalRifa = totalRifa,
+                TotalInteres = totalInteres 
+            };
+        }
+
         public string ActualizarPago(ActualizarPagoDto dto)
         {
             try

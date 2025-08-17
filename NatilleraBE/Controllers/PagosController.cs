@@ -43,13 +43,14 @@ namespace NatilleraBE.Controllers
 
             return Ok(resultado);
         }
-        //[HttpGet("TodosXMes")]
-        //public ActionResult<List<ResumenPagoSocioDto>> GetPagosDeTodosPorMes(int mes, int anio)
-        //{
-        //    var service = new clsPago();
-        //    var lista = service.ObtenerPagosPorMes(mes, anio);
-        //    return Ok(lista);
-        //}
+        [HttpGet("PorMes")]
+        public ActionResult<ResumenPagosMesDto> GetPagosDeTodosPorMes(int mes, int anio)
+        {
+            var service = new clsPago();
+            var resumen = service.ObtenerPagosPorMes(mes, anio);
+            return Ok(resumen);
+        }
+
         [HttpGet("DetalladosXMes")]
         public IActionResult ObtenerPagosDetalladosPorMes(int mes, int anio)
         {

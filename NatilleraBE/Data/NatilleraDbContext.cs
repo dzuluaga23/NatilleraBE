@@ -26,6 +26,8 @@ public partial class NatilleraDbContext : DbContext
 
     public virtual DbSet<Pago> Pagos { get; set; }
 
+    public virtual DbSet<Polla> Pollas { get; set; }
+
     public virtual DbSet<Prestamo> Prestamos { get; set; }
 
     public virtual DbSet<Rol> Rols { get; set; }
@@ -141,6 +143,20 @@ public partial class NatilleraDbContext : DbContext
                 .HasForeignKey(d => d.IdSocio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Pago__id_socio__38996AB5");
+        });
+
+        modelBuilder.Entity<Polla>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Pollas");
+
+            entity.ToTable("Polla");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Estado).HasColumnName("estado");
+            entity.Property(e => e.Mes)
+                .HasMaxLength(30)
+                .HasColumnName("mes");
+            entity.Property(e => e.Numero).HasColumnName("numero");
         });
 
         modelBuilder.Entity<Prestamo>(entity =>
