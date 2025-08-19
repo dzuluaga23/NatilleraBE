@@ -6,7 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -16,7 +22,9 @@ builder.Services.AddScoped<clsPago>();
 builder.Services.AddScoped<clsInteresPago>();
 builder.Services.AddScoped<clsPolla>();
 builder.Services.AddHttpClient<clsPolla>();
-
+builder.Services.AddScoped<clsPrestamo>();
+builder.Services.AddScoped<clsAbonos>();
+builder.Services.AddScoped<clsInteresPrestamo>();
 
 
 builder.Services.AddDbContext<NatilleraDbContext>(options =>
