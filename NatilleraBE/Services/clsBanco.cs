@@ -24,7 +24,7 @@ namespace NatilleraBE.Services
             var totalPrestamos = await _context.Prestamos.SumAsync(p => (decimal?)p.Valor) ?? 0;
             var totalSaldoRestante = totalPrestamos - totalAbonos;
 
-            var granTotal = totalAbonos + totalSaldoRestante + totalInteresPagos +
+            var granTotal = totalAbonos + totalInteresPagos +
                             totalInteresPrestamos + totalRifas + totalPollas +
                             totalAhorros;
 
@@ -79,7 +79,7 @@ namespace NatilleraBE.Services
 
             var totalSaldoRestante = totalPrestamos - totalAbonos;
 
-            var granTotal = totalAbonos + totalSaldoRestante + totalInteresPagos +
+            var granTotal = totalAbonos + totalInteresPagos +
                             totalInteresPrestamos + totalRifas + totalPollas +
                             totalAhorros;
 
