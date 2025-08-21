@@ -4,6 +4,7 @@
     {
         public decimal Valor { get; set; }
         public int IdPrestamo { get; set; }
+        public DateOnly Fecha { get; set; }
     }
 
     public class AbonoConsultaDto

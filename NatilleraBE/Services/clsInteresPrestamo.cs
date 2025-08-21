@@ -26,7 +26,7 @@ namespace NatilleraBE.Services
             var interes = new InteresPrestamo
             {
                 Valor = dto.Valor,
-                Fecha = DateOnly.FromDateTime(DateTime.Now),
+                Fecha = dto.Fecha,
                 IdPrestamo = dto.IdPrestamo
             };
 

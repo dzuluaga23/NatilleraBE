@@ -25,6 +25,7 @@ builder.Services.AddHttpClient<clsPolla>();
 builder.Services.AddScoped<clsPrestamo>();
 builder.Services.AddScoped<clsAbonos>();
 builder.Services.AddScoped<clsInteresPrestamo>();
+builder.Services.AddScoped<clsBanco>();
 
 
 builder.Services.AddDbContext<NatilleraDbContext>(options =>

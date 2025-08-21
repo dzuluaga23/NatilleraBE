@@ -26,7 +26,7 @@ namespace NatilleraBE.Services
 
             var totalIntereses = prestamo.InteresPrestamos.Sum(i => i.Valor);
             var totalAbonos = prestamo.AbonosPrestamos.Sum(a => a.Valor ?? 0);
-            var saldoPendiente = (prestamo.Valor ?? 0) + totalIntereses - totalAbonos;
+            var saldoPendiente = (prestamo.Valor ?? 0) - totalAbonos;
 
             if (dto.Valor > saldoPendiente)
                 throw new Exception("El abono no puede ser mayor al saldo pendiente");
@@ -34,7 +34,7 @@ namespace NatilleraBE.Services
             var abono = new AbonosPrestamo
             {
                 Valor = dto.Valor,
-                Fecha = DateOnly.FromDateTime(DateTime.Now),
+                Fecha = dto.Fecha,
                 IdPrestamo = dto.IdPrestamo,
                 ValorRestante = saldoPendiente - dto.Valor
             };

@@ -146,8 +146,20 @@ namespace NatilleraBE.Services
 
             if (pollaMes?.Estado == true)
             {
-                totalPolla /= 2;
+                var pagosMes = dbNatillera.Pagos
+                    .Where(p => p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                    .ToList();
+
+                foreach (var pago in pagosMes)
+                {
+                    pago.Polla = 2500;
+                }
+
+                dbNatillera.SaveChanges();
+
+                totalPolla = pagosMes.Sum(p => p.Polla);
             }
+
 
             return new ResumenPagosMesDto
             {
@@ -208,8 +220,5 @@ namespace NatilleraBE.Services
 
             return pagos;
         }
-
-
-
     }
 }
