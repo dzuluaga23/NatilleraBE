@@ -7,5 +7,6 @@
         public decimal Rifa { get; set; }
         public decimal Polla { get; set; }
         public DateOnly FechaPago { get; set; }
+        public int MesPago { get; set; }
     }
 }

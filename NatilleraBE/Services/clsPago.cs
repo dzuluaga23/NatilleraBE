@@ -18,7 +18,7 @@ namespace NatilleraBE.Services
 
                 var yaPagoEsteMes = dbNatillera.Pagos.Any(p =>
                     p.IdSocio == dto.IdSocio &&
-                    p.FechaPago.Month == dto.FechaPago.Month &&
+                    p.MesPago == dto.MesPago &&
                     p.FechaPago.Year == dto.FechaPago.Year &&
                     p.Estado == true);
 
@@ -32,7 +32,8 @@ namespace NatilleraBE.Services
                     Polla = dto.Polla,
                     Ahorro = dto.Ahorro,
                     FechaPago = dto.FechaPago,
-                    Estado = true 
+                    Estado = true, 
+                    MesPago = dto.MesPago
                 };
 
                 dbNatillera.Pagos.Add(pago);
@@ -62,12 +63,14 @@ namespace NatilleraBE.Services
             {
                 Documento = socio.Documento ?? 0,
                 Nombre = socio.Nombre,
+
                 Pagos = socio.Pagos.Select(p => new PagoDetalleDto
                 {
                     FechaPago = p.FechaPago,
                     Ahorro = p.Ahorro,
                     Polla = p.Polla,
-                    Rifa = p.Rifa
+                    Rifa = p.Rifa, 
+                    MesPago = p.MesPago,
                 }).ToList(),
                 TotalAhorro = socio.Pagos.Sum(p => p.Ahorro),
                 TotalPolla = socio.Pagos.Sum(p => p.Polla),
@@ -81,7 +84,7 @@ namespace NatilleraBE.Services
                 .Select(s => new ResumenPagoSocioDto
                 {
                     IdPago = dbNatillera.Pagos
-                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
                         .Select(p => p.Id)
                         .FirstOrDefault(),
 
@@ -89,33 +92,47 @@ namespace NatilleraBE.Services
                     Nombre = s.Nombre,
 
                     Ahorro = dbNatillera.Pagos
-                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
                         .Select(p => (decimal?)p.Ahorro).FirstOrDefault() ?? 0,
 
                     Polla = dbNatillera.Pagos
-                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
                         .Select(p => (decimal?)p.Polla).FirstOrDefault() ?? 0,
 
                     Rifa = dbNatillera.Pagos
-                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
                         .Select(p => (decimal?)p.Rifa).FirstOrDefault() ?? 0,
 
                     FechaPago = dbNatillera.Pagos
-                        .Where(p => p.IdSocio == s.Id && p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
                         .Select(p => (DateOnly?)p.FechaPago)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+
+                    MesPago = dbNatillera.Pagos
+                        .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
+                        .Select(p => (int)p.MesPago)
+                        .FirstOrDefault(),
+
+                    Interes = dbNatillera.InteresPagos
+                        .Where(i => i.IdPago == dbNatillera.Pagos
+                            .Where(p => p.IdSocio == s.Id && p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
+                            .Select(p => p.Id)
+                            .FirstOrDefault())
+                        .Select(i => (decimal?)i.ValorTotal)
+            .FirstOrDefault() ?? 0
+
                 }).ToList();
 
             var totalAhorro = socios.Sum(s => s.Ahorro);
             var totalPolla = socios.Sum(s => s.Polla);
             var totalRifa = socios.Sum(s => s.Rifa);
 
-            var totalInteres = (
-                from i in dbNatillera.InteresPagos
-                join p in dbNatillera.Pagos on i.IdPago equals p.Id
-                where p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado
-                select (decimal?)i.ValorTotal
-            ).Sum() ?? 0;
+            //var totalInteres = (
+            //    from i in dbNatillera.InteresPagos
+            //    join p in dbNatillera.Pagos on i.IdPago equals p.Id
+            //    where p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado
+            //    select (decimal?)i.ValorTotal
+            //).Sum() ?? 0;
 
             string MesEnTexto(int m) => m switch
             {
@@ -147,7 +164,7 @@ namespace NatilleraBE.Services
             if (pollaMes?.Estado == true)
             {
                 var pagosMes = dbNatillera.Pagos
-                    .Where(p => p.FechaPago.Month == mes && p.FechaPago.Year == anio && p.Estado)
+                    .Where(p => p.MesPago == mes && p.FechaPago.Year == anio && p.Estado)
                     .ToList();
 
                 foreach (var pago in pagosMes)
@@ -167,7 +184,7 @@ namespace NatilleraBE.Services
                 TotalAhorro = totalAhorro,
                 TotalPolla = totalPolla,
                 TotalRifa = totalRifa,
-                TotalInteres = totalInteres 
+                //TotalInteres = totalInteres 
             };
         }
 
@@ -182,7 +199,7 @@ namespace NatilleraBE.Services
                 var existeDuplicado = dbNatillera.Pagos.Any(p =>
                     p.IdSocio == pago.IdSocio &&
                     p.Id != dto.IdPago && 
-                    p.FechaPago.Month == dto.FechaPago.Month &&
+                    p.MesPago == dto.MesPago &&
                     p.FechaPago.Year == dto.FechaPago.Year &&
                     p.Estado);
 
@@ -193,6 +210,7 @@ namespace NatilleraBE.Services
                 pago.Rifa = dto.Rifa;
                 pago.Polla = dto.Polla;
                 pago.FechaPago = dto.FechaPago;
+                pago.MesPago = dto.MesPago;
 
                 dbNatillera.SaveChanges();
                 return "Pago actualizado correctamente.";

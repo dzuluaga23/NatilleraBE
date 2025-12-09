@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NatilleraBE.Data;
 using NatilleraBE.DTOs;
-using NatilleraBE.Models;
 
 namespace NatilleraBE.Services
 {
@@ -24,7 +23,7 @@ namespace NatilleraBE.Services
             var totalPrestamos = await _context.Prestamos.SumAsync(p => (decimal?)p.Valor) ?? 0;
             var totalSaldoRestante = totalPrestamos - totalAbonos;
 
-            var granTotal = totalAbonos + totalInteresPagos +
+            var granTotal = totalInteresPagos +
                             totalInteresPrestamos + totalRifas + totalPollas +
                             totalAhorros;
 
@@ -62,15 +61,15 @@ namespace NatilleraBE.Services
                 .SumAsync(i => (decimal?)i.Valor) ?? 0;
 
             var totalRifas = await _context.Pagos
-                .Where(p => p.FechaPago.Month == mes && p.FechaPago.Year == anio)
+                .Where(p => p.MesPago == mes && p.FechaPago.Year == anio)
                 .SumAsync(p => (decimal?)p.Rifa) ?? 0;
 
             var totalPollas = await _context.Pagos
-                .Where(p => p.FechaPago.Month == mes && p.FechaPago.Year == anio)
+                .Where(p => p.MesPago == mes && p.FechaPago.Year == anio)
                 .SumAsync(p => (decimal?)p.Polla) ?? 0;
 
             var totalAhorros = await _context.Pagos
-                .Where(p => p.FechaPago.Month == mes && p.FechaPago.Year == anio)
+                .Where(p => p.MesPago == mes && p.FechaPago.Year == anio)
                 .SumAsync(p => (decimal?)p.Ahorro) ?? 0;
 
             var totalPrestamos = await _context.Prestamos

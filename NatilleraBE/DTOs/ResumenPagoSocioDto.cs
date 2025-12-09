@@ -8,6 +8,8 @@
         public decimal Ahorro { get; set; }
         public decimal Polla { get; set; }
         public decimal Rifa { get; set; }
+        public decimal Interes { get; set; }
         public DateOnly? FechaPago { get; set; }
+        public int MesPago { get; set; }
     }
 }

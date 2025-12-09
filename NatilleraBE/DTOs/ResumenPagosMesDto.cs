@@ -7,5 +7,6 @@
         public decimal TotalPolla { get; set; }
         public decimal TotalRifa { get; set; }
         public decimal TotalInteres { get; set; }
+
     }
 }

@@ -15,6 +15,7 @@
     public class PagoDetalleDto
     {
         public DateOnly FechaPago { get; set; }
+        public int? MesPago { get; set; }
         public decimal Ahorro { get; set; }
         public decimal Polla { get; set; }
         public decimal Rifa { get; set; }

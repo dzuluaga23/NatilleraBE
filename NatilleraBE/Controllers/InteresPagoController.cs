@@ -24,16 +24,6 @@ namespace NatilleraBE.Controllers
             var interesPago = await _clsInteresPago.RegistrarInteresPagoAsync(dto);
             return Ok(interesPago);
         }
-        [HttpGet("ObtenerXId")]
-        public async Task<IActionResult> ObtenerPorIdPago(int idPago)
-        {
-            var intereses = await _clsInteresPago.ObtenerPorIdPagoAsync(idPago);
-
-            if (intereses == null || intereses.Count == 0)
-                return NotFound(new { mensaje = "No se encontraron intereses para este pago" });
-
-            return Ok(intereses);
-        }
 
     }
 }

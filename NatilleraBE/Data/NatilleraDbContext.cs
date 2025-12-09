@@ -132,6 +132,7 @@ public partial class NatilleraDbContext : DbContext
             entity.Property(e => e.Estado).HasColumnName("estado");
             entity.Property(e => e.FechaPago).HasColumnName("fecha_pago");
             entity.Property(e => e.IdSocio).HasColumnName("id_socio");
+            entity.Property(e => e.MesPago).HasColumnName("mes_pago");
             entity.Property(e => e.Polla)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("polla");

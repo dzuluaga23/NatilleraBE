@@ -19,6 +19,8 @@ public partial class Pago
 
     public int IdSocio { get; set; }
 
+    public int? MesPago { get; set; }
+
     public virtual Socio IdSocioNavigation { get; set; } = null!;
 
     public virtual ICollection<InteresPago> InteresPagos { get; set; } = new List<InteresPago>();
